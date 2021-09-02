@@ -1,0 +1,105 @@
+{
+  "project_info": {
+    "project_number": "585440291871",
+    "project_id": "masterofceremony",
+    "storage_bucket": "masterofceremony.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585440291871:android:c128ccee5ad060b53f792a",
+        "android_client_info": {
+          "package_name": "com.masterofceremony"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "585440291871-k8l2lvm30gljuevhb02urkg5p4o86ohe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.masterofceremony",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "585440291871-0int2m3ihosqjp2nup4n58kg1bi8d4dq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoYvRBDcPeBYD5_Jyi_vpu_B737IkPkdM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "585440291871-0int2m3ihosqjp2nup4n58kg1bi8d4dq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585440291871:android:902b43f8fdcd13863f792a",
+        "android_client_info": {
+          "package_name": "com.mc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "585440291871-0int2m3ihosqjp2nup4n58kg1bi8d4dq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoYvRBDcPeBYD5_Jyi_vpu_B737IkPkdM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "585440291871-0int2m3ihosqjp2nup4n58kg1bi8d4dq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585440291871:android:b8e1a53d97a192533f792a",
+        "android_client_info": {
+          "package_name": "com.mcmasterofceremony"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "585440291871-0int2m3ihosqjp2nup4n58kg1bi8d4dq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoYvRBDcPeBYD5_Jyi_vpu_B737IkPkdM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "585440291871-0int2m3ihosqjp2nup4n58kg1bi8d4dq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
