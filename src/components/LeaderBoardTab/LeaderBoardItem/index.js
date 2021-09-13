@@ -54,4 +54,5 @@ const LeaderBoardItem = ({
   );
 };
 
+
 export default LeaderBoardItem;

@@ -53,4 +53,5 @@ export default ScaledSheet.create({
     bottom: scale(80),
     width: '100%',
   },
+  
 });

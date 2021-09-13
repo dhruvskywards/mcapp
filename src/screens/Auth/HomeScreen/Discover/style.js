@@ -62,7 +62,7 @@ export default ScaledSheet.create({
   floatButtonView:{
     position: 'absolute',
     right: scale(10),
-    bottom: scale(100),
+    bottom: scale(54),
     left: scale(10),
     flexDirection: 'row',
     zIndex: 1,
@@ -86,6 +86,11 @@ export default ScaledSheet.create({
     borderWidth: 0,
     paddingHorizontal: scale(10),
     flex: 1,
+  },
+  SurfaceIcon: {
+    marginLeft: scale(8),
+    marginRight:scale(4),
+    paddingVertical: scale(40),
   },
   row: {
     flexDirection: 'row',

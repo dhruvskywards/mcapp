@@ -8,6 +8,7 @@ export default ScaledSheet.create({
     width: '100%',
     flex: 1,
   },
+  
   pageContainer: {
     flex: 1,
   },

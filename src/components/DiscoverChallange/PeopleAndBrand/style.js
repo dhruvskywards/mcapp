@@ -26,6 +26,7 @@ export default ScaledSheet.create({
     marginLeft: scale(20)
   },
   
+  
   txt: {
     fontSize: scale(20),
     fontFamily: fonts.Proxima_Nova_Sbold,

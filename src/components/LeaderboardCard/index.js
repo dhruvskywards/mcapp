@@ -18,6 +18,7 @@ const LeaderboardCard = ({data}) => {
   
   const [ModelVisible, setModelVisisble] = useState(false);
 
+  
     return (
       <View
         style={[style.container,{backgroundColor: CustomTheme.colors.background}]}>

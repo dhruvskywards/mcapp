@@ -119,18 +119,18 @@ export const DISCOVER_SEARCH_FILTERS = {
 export const DISCOVER_SEARCH_FILTERS_1 = [
   {
     label: 'Channels',
-    value: 'Channels',
+    name: 'Channels',
   },
   {
     label: 'People',
-    value: 'People',
+    name: 'People',
   },
   {
     label: 'Brands',
-    value: 'Brands',
+    name: 'Brands',
   },
   {
     label: 'Challenges',
-    value: 'Challenges',
+    name: 'Challenges',
   },
 ];

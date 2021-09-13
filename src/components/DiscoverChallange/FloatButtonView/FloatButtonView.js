@@ -27,7 +27,7 @@ const FloatButtonView = (props) => {
       <TextInput
         placeholderTextColor={theme.BORDER_SILVER}
         autoCapitalize={'none'}
-        // selectionColor={colors.textPrimary}
+         selectionColor={theme.BLACK}
         {...props}
         style={[
          

@@ -10,6 +10,7 @@ export default ScaledSheet.create({
     
   },
 
+  
   circleView:{
     height: scale(35),
     width: scale(35),

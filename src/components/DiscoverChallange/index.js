@@ -18,9 +18,8 @@ const DiscoverChallange = ({ disabled }) => {
       title={'#' + faker.lorem.word()}
       helperText={faker.lorem.sentence()}
       circleStyle={{ backgroundColor: theme.YELLOW_BACKGROUND }}
-    //   iconView={() => {
-    //     return <IconSet name={'battle'} color={COLORS.BLACK} size={18} />;
-    //   }}
+    
+      
       containerStyle={{ paddingHorizontal:scale(15) }}
     />
   );

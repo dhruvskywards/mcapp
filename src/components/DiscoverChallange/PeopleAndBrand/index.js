@@ -65,6 +65,7 @@ const PeopleAndBrand = ({ setTabNos ,data}) => {
             />
         </View>
         <View>
+          
     <Text style={[styles.DiscoverFeatured]}>
      People
     </Text>

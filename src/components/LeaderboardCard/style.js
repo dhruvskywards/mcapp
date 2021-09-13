@@ -2,6 +2,7 @@ import {scale, verticalScale, ScaledSheet} from 'react-native-size-matters';
 import fonts from '../../utils/fonts';
 import theme from '../../utils/theme';
 
+
 export default ScaledSheet.create({
   container: {
     height: verticalScale(380),

@@ -64,5 +64,6 @@ const LeaderBoard = ({navigation}) => {
     </SafeAreaView>
     
   );
+  
 };
 export default LeaderBoard;

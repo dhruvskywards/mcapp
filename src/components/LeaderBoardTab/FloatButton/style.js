@@ -80,4 +80,5 @@ export default ScaledSheet.create({
     flexDirection: 'row',
     justifyContent: 'center'
   },
+  
 });

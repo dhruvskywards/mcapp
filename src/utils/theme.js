@@ -72,4 +72,5 @@ export default {
   LIVE_TEXT: '#46E67B',
   IMAGE_BORDER: '#BFF469',
   IMAGE_BORDER_1: '#8ac866',
+  
 };

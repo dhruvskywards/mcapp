@@ -18,6 +18,7 @@ const DiscoverTab = ({setTabNo}) => {
     setTabNo(item.cftags);
   };
 
+  
   return (
     <View style={style.mainview}>
       <View>

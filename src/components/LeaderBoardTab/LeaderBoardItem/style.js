@@ -52,4 +52,5 @@ export default ScaledSheet.create({
    textAlign:'center',
    fontFamily: fonts.Proxima_Nova_Bold,
  }
+ 
 });

@@ -93,7 +93,7 @@ const Discover = ({navigation}) => {
                   data={DISCOVER_SEARCH_FILTERS_1}
                   visible={visibleModal}
                   action={() => setVisibleModal(false)}
-                  //onPress={setSelectedGenreData}
+                  onPress={DISCOVER_SEARCH_FILTERS_1}
                 />
         </Pressable>
         </View>
