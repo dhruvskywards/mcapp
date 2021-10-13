@@ -6,6 +6,6 @@ export default ScaledSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.TRANSPARENT,
     flexDirection: 'row',
-    fontFamily: 'ProximaNova-Regular',
+    fontFamily: 'ProximaNova-Bold',
   },
 });

@@ -21,6 +21,7 @@ import Avatar from '../../../../components/Avatar/Avatar';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {getSessionData} from 'src/utils/asyncStorage';
 import sessionKey from 'src/utils/const';
+import { scale } from 'react-native-size-matters';
 const Home = () => {
   const dispatch = useDispatch();
   const sheetRef = useRef();
@@ -115,6 +116,7 @@ const Home = () => {
       <View style={style.ModalContain}>
         <OutlinedTextInput
           placeholder={'Search'}
+          containerProps={{height:scale(50)}}
           rightView={() => {
             return (
               <MIcon name="plus-circle" size={25} style={style.searchicon} />

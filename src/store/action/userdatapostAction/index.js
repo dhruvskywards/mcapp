@@ -8,6 +8,7 @@ import ApiConstants from '../../../utils/ApiConstants';
 export const userDataPost = (_payload, resolve, reject) => {
   const data = _payload;
   const url = `${ApiConstants.BASE_URL}${ApiConstants.DATA_POST}`;
+  console.log("user data post",data)
   const payload = {
     action: USER_DATA_POST,
     method: 'POST',
