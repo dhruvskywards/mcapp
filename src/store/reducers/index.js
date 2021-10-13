@@ -13,7 +13,18 @@ import * as localuserdata from './localuserdata';
 import * as intrestList from './intrestList';
 import * as userDataPost from './userdatapost';
 import * as media from './media';
-
+import * as remixPointList from './remixPointList';
+import * as fetchUserProfileReducer from './fetchUserProfileReducer';
+import * as fetchModeratorProfileReducer from './fetchModeratorProfileReducer';
+import * as cancelUserSubscriptionreducer from './cancelUserSubscriptionreducer';
+import * as cancelTierSubcriptionreducer from './cancelTierSubcriptionreducer';
+import * as fetchUserConnectionReducer from './fetchUserConnectionReducer';
+import * as tierPermissionActionsReducer from './tierPermissionActionsReducer';
+import * as updateTierDetailReducer from './updateTierDetailReducer';
+import * as updateProfileReducer from './updateProfileReducer';
+import * as deleteUserReducer from './deleteUserReducer';
+import * as fetchSubscriptionReducer from './fetchSubscriptionReducer';
+import * as fetchTierReducer from './fetchTierReducer';
 export default Object.assign(
   loaderReducer,
   postListReducer,
@@ -26,4 +37,16 @@ export default Object.assign(
   intrestList,
   userDataPost,
   media,
+  remixPointList,
+  fetchUserProfileReducer,
+  fetchModeratorProfileReducer,
+  cancelUserSubscriptionreducer,
+  cancelTierSubcriptionreducer,
+  fetchUserConnectionReducer,
+  tierPermissionActionsReducer,
+  updateTierDetailReducer,
+  updateProfileReducer,
+  deleteUserReducer,
+  fetchSubscriptionReducer,
+  fetchTierReducer
 );

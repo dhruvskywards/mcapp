@@ -11,7 +11,7 @@ const TitleAndSubTitleRow = ({name, helperText, isVerified = false}) => {
     <Fragment>
       {name ? (
         <View style={styles.titlensubtilecon}>
-          <Text style={[fonts.Proxima_Nova_Sbold, {lineHeight: scale(17)}]}>
+          <Text style={[ {lineHeight: scale(17),fontSize:scale(15),fontFamily:fonts.Proxima_Nova_Sbold,}]}>
             {name}
           </Text>
           {isVerified ? (
@@ -28,7 +28,7 @@ const TitleAndSubTitleRow = ({name, helperText, isVerified = false}) => {
         <Text
           style={[
             fonts.Proxima_Nova_Sbold,
-            {color: theme.TEXT_COMMON_SILVER, marginTop: scale(5)},
+            {color: theme.BLACK, marginTop: scale(5)},
           ]}>
           {helperText}
         </Text>

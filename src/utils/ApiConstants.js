@@ -12,6 +12,17 @@ const ApiConstants = {
   DATA_POST: 'user/',
   MEDIA: 'media/',
   GET_USER: 'user/email/',
+  REMIX_POINTS:'remix_points/',
+  GET_USER_PROFILE:'user/profile/',
+  GET_USER_SUBCRIPTION_CANCEL:'user/cancel/',
+  GET_TIER_MEMBER_CANCEL:'tier_member/cancel/',
+  GET_USER_CONNECTION:'connection/users/',
+  GET_TIER_MEMBER:'tier_member/',
+  UPDATE_TIER_MEMBER_DATA:'tier_member/',
+  UPDATE_PROFILE:'user/update/',
+  DELETE_USER:'user/delete/',
+  GET_SUBSCRIPTION:'subscription/',
+  GET_TIER:'tier/'
 };
 
 export default ApiConstants;

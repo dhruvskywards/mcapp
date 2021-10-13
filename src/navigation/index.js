@@ -35,6 +35,7 @@ import PlayScreen from '../screens/Auth/PlayScreen';
 import PostScreen from '../screens/Auth/PostScreen';
 import FavouriteScreen from '../screens/Auth/FavouriteScreen';
 import ProfileScreen from '../screens/Auth/ProfileScreen';
+import SettingScreen from '../screens/Auth/SettingScreen'
 import theme from '../utils/theme';
 import commonStyle from '../utils/styles';
 import {useSelector} from 'react-redux';
@@ -46,6 +47,20 @@ import AdScreen from '../screens/Auth/LiveStream/AdScreen';
 import JoinCompetition from '../screens/Auth/HomeScreen/JoinCompetition/JoinCompetition';
 import StreamTo from '../screens/Auth/CompetitionSabLobby/StreamTo';
 import CompetitionEnded from '../screens/Auth/CompetitionSabLobby/CompetitionEnded';
+import BuyRemixPoints from '../screens/Auth/SettingScreen/BuyRemixPoints';
+import ManageAccounts from '../screens/Auth/SettingScreen/ManageAccounts';
+import Details from '../screens/Auth/SettingScreen/ManageAccounts/Details';
+import BlockedUser from '../screens/Auth/SettingScreen/BlockedUser';
+import ManageCurrentSubscription from '../screens/Auth/SettingScreen/ManageCurrentSubscription';
+import ContinueToCancel from '../screens/Auth/SettingScreen/ManageCurrentSubscription/ContinueToCancel';
+import CancelSubscriptionFinal from '../screens/Auth/SettingScreen/ManageCurrentSubscription/CancelSubscriptionFinal';
+import ChangePassword from '../screens/Auth/SettingScreen/ChangePassword';
+import ForgotPasswords from '../screens/Auth/SettingScreen/ChangePassword/ForgotPasswords';
+import TierMemberPermision from '../screens/Auth/SettingScreen/TierMemberPermision';
+import DeleteAccount from '../screens/Auth/SettingScreen/DeleteAccont';
+import InviteFriends from '../screens/Auth/SettingScreen/InviteFriends';
+import Subscription from '../screens/Auth/SettingScreen/Subscription';
+import SubscriptionDetails from '../screens/Auth/SettingScreen/Subscription/SubscriptionDetails';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const ProfileStack = createStackNavigator();
@@ -129,8 +144,8 @@ function HomeTabs() {
         }}
       />
       <Tab.Screen
-        name="ProfileScreen"
-        component={ProfileScreen}
+        name="SettingScreen"                                      //name="ProfileScreen"
+        component={SettingScreen}                    //component={ProfileScreen}
         options={{
           tabBarIcon: ({focused}) => (
             <FontAwesome
@@ -337,6 +352,132 @@ function NavStack() {
           header: null,
         }}
       />
+      <Stack.Screen
+        name="BuyRemixPoints"
+        component={BuyRemixPoints}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+
+      <Stack.Screen
+        name="ManageAccounts"
+        component={ManageAccounts}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+
+      <Stack.Screen
+        name="Details"
+        component={Details}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+
+      <Stack.Screen
+        name="BlockedUser"
+        component={BlockedUser}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+
+      <Stack.Screen
+        name="ManageCurrentSubscription"
+        component={ManageCurrentSubscription}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+
+      <Stack.Screen
+        name="ContinueToCancel"
+        component={ContinueToCancel}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+
+      <Stack.Screen
+        name="CancelSubscriptionFinal"
+        component={CancelSubscriptionFinal}
+         options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+
+      <Stack.Screen
+        name="ChangePassword"
+        component={ChangePassword}
+         options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+
+      <Stack.Screen
+        name="ForgotPasswords"
+        component={ForgotPasswords}
+         options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+
+    <Stack.Screen
+        name="TierMemberPermision"
+        component={TierMemberPermision}
+         options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+
+      <Stack.Screen
+        name="DeleteAccount"
+        component={DeleteAccount}
+         options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+
+    <Stack.Screen
+        name="InviteFriends"
+        component={InviteFriends}
+         options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+
+    <Stack.Screen
+        name="Subscription"
+        component={Subscription}
+         options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+       <Stack.Screen
+        name="SubscriptionDetails"
+        component={SubscriptionDetails}
+         options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+     
+      
     </Stack.Navigator>
   );
 }
@@ -353,6 +494,8 @@ export default function App() {
       card: theme.BACKGROUND_VARAINT_7,
       primary: theme.BACKGROUND_VARAINT_7,
       notification: theme.WHITE,
+      backgrounds:theme.BUTTON_BACKGROUD,
+      lineSeparator :theme.LIGHT_GRAY,
     },
   };
 
@@ -365,6 +508,8 @@ export default function App() {
       card: theme.BACKGROUND_PRIMARY_DARK,
       primary: theme.BLACK_VARAINT_3,
       notification: theme.BLACK,
+      backgrounds:theme.BLACK,
+      lineSeparator :theme.WHITE,
     },
   };
 
