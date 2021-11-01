@@ -1,16 +1,19 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import {Text, View, Pressable} from 'react-native';
 import styles from './style';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {scale} from 'react-native-size-matters';
 import theme from '../../utils/theme';
 import {useTheme} from '@react-navigation/native';
+import TrackPlayer, { usePlaybackState, STATE_PLAYING } from 'react-native-track-player';
+import { parseLogBoxException } from "react-native/Libraries/LogBox/Data/parseLogBoxLog";
 
-const BeatPlay = ({backGroundColor, playTrack,music,header}) => {
+
+const BeatPlay = ({item,backGroundColor, playTrack,music,header,subheader,selfBeatVoteId,onpressevent}) => {
   const CustomTheme = useTheme();
   const [isplaying, setIsPlaying] = useState(false);
-  const [isVoted, setisVoted] = useState(false);
-
+  const [isVoted,setIsVoted] = useState('false')
+     // console.log("CH-Vote0BeatPlay",JSON.stringify(item.isVoted))
   return (
     <View
       style={[
@@ -19,8 +22,8 @@ const BeatPlay = ({backGroundColor, playTrack,music,header}) => {
       ]}>
       <Pressable
         onPress={() => {
-          setIsPlaying(!isplaying);
           playTrack && playTrack(music);
+          setIsPlaying(!isplaying);
         }}
         style={[styles.playView, backGroundColor]}>
         <View style={styles.innerView}>
@@ -33,17 +36,24 @@ const BeatPlay = ({backGroundColor, playTrack,music,header}) => {
       </Pressable>
       <View style={styles.ContainView}>
         <Text style={[styles.beatName, {color: CustomTheme.colors.text}]}>
-          12AM in London
+          {header}
         </Text>
-        <Text style={styles.votes}>2930 votes</Text>
+        <Text style={styles.votes}>{subheader} votes</Text>
       </View>
       <Pressable
-        onPress={() => setisVoted(!isVoted)}
+        onPress={() => {
+          // if(!item.isVoted)
+          //   setIsVoted(!isVoted)
+           onpressevent()
+          //setIsVoted1(selfBeatVoteId === null || selfBeatVoteId === undefined ? false : true)
+        }}
+        // disabled={selfBeatVoteId === null || selfBeatVoteId === undefined ? false : true}
         style={[
           styles.buttonContainer,
           {backgroundColor: CustomTheme.colors.text},
         ]}>
-        {isVoted ? (
+
+        {item?.isVoted ? (
           <View style={styles.VoteView}>
             <Text
               style={[

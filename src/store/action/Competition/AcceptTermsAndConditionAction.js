@@ -6,8 +6,6 @@ import ApiConstants from '../../../utils/ApiConstants';
  * Category Name
  */
 export const AcceptTermsAndConditionAction = (_payload, resolve, reject) => {
-
-  console.log("CH-type11",JSON.stringify(_payload));
   const data = _payload;
   const url = `${ApiConstants.BASE_URL}${data.type}/tc/${data.id}/${data.userId}`;
   const payload = {

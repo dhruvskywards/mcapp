@@ -44,6 +44,7 @@ const Signin = ({navigation}) => {
               mailandPhoneNo,
               async data => {
                 setSessionData(sessionKey.userData, JSON.stringify(data));
+                setSessionData('userformFlag', '1');
                 navigation.dispatch(
                   CommonActions.reset({
                     index: 1,

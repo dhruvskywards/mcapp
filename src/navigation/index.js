@@ -32,7 +32,6 @@ import Step1 from '../screens/Unauth/ProfileForm/Step1';
 import styles from '../utils/styles';
 import HomeScreen from '../screens/Auth/HomeScreen';
 import PlayScreen from '../screens/Auth/PlayScreen';
-import PostScreen from '../screens/Auth/PostScreen';
 import FavouriteScreen from '../screens/Auth/FavouriteScreen';
 import ProfileScreen from '../screens/Auth/ProfileScreen';
 import theme from '../utils/theme';
@@ -46,9 +45,22 @@ import AdScreen from '../screens/Auth/LiveStream/AdScreen';
 import JoinCompetition from '../screens/Auth/HomeScreen/JoinCompetition/JoinCompetition';
 import StreamTo from '../screens/Auth/CompetitionSabLobby/StreamTo';
 import CompetitionEnded from '../screens/Auth/CompetitionSabLobby/CompetitionEnded';
+import StoryLayout from '../screens/Auth/HomeScreen/StoryLayout';
+import AddStoryFlow from '../screens/Auth/HomeScreen/AddStoryFlow/mainpage';
+import EditPhoto from '../screens/Auth/HomeScreen/AddStoryFlow/EditPhoto';
+import PostStoryForm from '../screens/Auth/HomeScreen/AddStoryFlow/PostStoryForm';
+import UserProfileGallery from '../components/UserProfileGallery';
+import UserProfileMusic from '../components/UserProfileMusic';
+import UserProfileLink from '../components/UserProfileLink';
+import UserProfileCalender from '../components/UserProfileCalender';
+import SocialLinks from '../components/SocialLinks';
+import ChatSetting from "../components/ChatSettings";
+import AdTrack from "../components/AdTrack";
+import ContestPerformerResult from "../screens/Auth/HomeScreen/LiveStreame/ContestPerformerResult";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const ProfileStack = createStackNavigator();
+const Story = createStackNavigator();
 
 const customRenderFlashMessageIcon = (
   icon = 'success',
@@ -104,8 +116,10 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="PostScreen"
-        component={PostScreen}
+        component={AddStoryFlow}
+        initialParams={{ContentType: 'post'}}
         options={{
+          tabBarVisible: false,
           tabBarIcon: ({focused}) => (
             <Ionicons
               name="add-circle"
@@ -142,6 +156,29 @@ function HomeTabs() {
         }}
       />
     </Tab.Navigator>
+  );
+}
+
+function StoryFlow() {
+  return (
+    <Story.Navigator
+      initialRouteName="AddStoryFlow"
+      screenOptions={{
+        headerMode: 'screen',
+        //headerShown: false,
+        gestureEnabled: true,
+        gestureDirection: 'horizontal',
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+      }}>
+      <Story.Screen
+        name="AddStoryFlow"
+        component={AddStoryFlow}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+    </Story.Navigator>
   );
 }
 function UserProfile() {
@@ -210,6 +247,14 @@ function NavStack() {
         }}
       />
       <Stack.Screen
+        name="StoryFlow"
+        component={AddStoryFlow}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+      <Stack.Screen
         name="UserProfile"
         component={UserProfile}
         options={{
@@ -228,6 +273,14 @@ function NavStack() {
       <Stack.Screen
         name="ForgotPassword"
         component={ForgotPassword}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+      <Stack.Screen
+        name="StoryLayout"
+        component={StoryLayout}
         options={{
           headerShown: false,
           header: null,
@@ -314,6 +367,22 @@ function NavStack() {
         }}
       />
       <Stack.Screen
+        name="EditPhoto"
+        component={EditPhoto}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+      <Story.Screen
+        name="PostStoryForm"
+        component={PostStoryForm}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+      <Stack.Screen
         name="JoinCompetition"
         component={JoinCompetition}
         options={{
@@ -332,6 +401,70 @@ function NavStack() {
       <Stack.Screen
         name="CompetitionEnded"
         component={CompetitionEnded}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+      <Stack.Screen
+        name="UserProfileGallery"
+        component={UserProfileGallery}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+      <Stack.Screen
+        name="UserProfileMusic"
+        component={UserProfileMusic}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+      <Stack.Screen
+        name="UserProfileLink"
+        component={UserProfileLink}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+      <Stack.Screen
+        name="SocialLinks"
+        component={SocialLinks}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+      <Stack.Screen
+        name="UserProfileCalender"
+        component={UserProfileCalender}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+      <Stack.Screen
+        name="ChatSetting"
+        component={ChatSetting}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+      <Stack.Screen
+        name="ContestPerformerResult"
+        component={ContestPerformerResult}
+        options={{
+          headerShown: false,
+          header: null,
+        }}
+      />
+      <Stack.Screen
+        name="AdTrack"
+        component={AdTrack}
         options={{
           headerShown: false,
           header: null,

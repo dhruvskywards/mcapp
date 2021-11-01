@@ -6,6 +6,7 @@ import ApiConstants from '../../../utils/ApiConstants';
  * Category Name
  */
 export const userDataPost = (_payload, resolve, reject) => {
+
   const data = _payload;
   const url = `${ApiConstants.BASE_URL}${ApiConstants.DATA_POST}`;
   const payload = {

@@ -8,11 +8,16 @@ import * as compotitionListReducer from './compotitionList';
 import * as competitionEventReducer  from "./Competiton/competitionEventReducer";
 import * as acceptTermsAndConditionReducer  from "./Competiton/acceptTermsAndConditionReducer";
 import * as competitionGetSelfDetailReducer from "./Competiton/competitionGetSelfDetailReducer";
+import * as  competitionBeatVoteReducer  from "./Competiton/competitionBeatVoteReducer";
+import * as  competitionVoteReducer  from "./Competiton/competitionVoteReducer";
 import * as genresList from './genreList';
 import * as localuserdata from './localuserdata';
 import * as intrestList from './intrestList';
 import * as userDataPost from './userdatapost';
 import * as media from './media';
+import * as storyList from './storyList';
+import * as PostStory from './PostStory';
+import * as newPost from './newPost';
 
 export default Object.assign(
   loaderReducer,
@@ -21,9 +26,14 @@ export default Object.assign(
   competitionEventReducer,
   acceptTermsAndConditionReducer,
   competitionGetSelfDetailReducer,
+  competitionBeatVoteReducer,
+  competitionVoteReducer,
   genresList,
   localuserdata,
   intrestList,
   userDataPost,
   media,
+  storyList,
+  PostStory,
+  newPost,
 );

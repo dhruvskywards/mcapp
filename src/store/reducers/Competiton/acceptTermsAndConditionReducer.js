@@ -10,6 +10,7 @@ const initialState = {
 };
 
 export const acceptTermsAndConditionReducer = createReducer(initialState, {
+
   [types.COMPETITION_ACCEPT_TERM_CONDITION_START](state, action) {
     return {
       ...state,

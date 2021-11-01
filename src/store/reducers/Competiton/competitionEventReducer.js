@@ -17,6 +17,7 @@ import {
   COMPETITION_VIEWERS_ADDED,
   COMPETITION_YOURTURN_STARTED,
   COMPETITION_YOURTURN_STARTING,
+    COMPETITION_CHAT_CONTESTANT_ADDED
 } from '../../actionType';
 import createReducer from '../../../lib/createReducer';
 import _ from 'lodash';
@@ -111,7 +112,6 @@ export const competitionEventReducer = createReducer(initialState, {
     };
   },
   [types.COMPETITION_AD_STARTED](state, action) {
-    console.log('CH-ADS', JSON.stringify(action));
     return {
       ...state,
       ads: action.payload,
@@ -198,6 +198,24 @@ export const competitionEventReducer = createReducer(initialState, {
     return {
       ...state,
       comment: d,
+    };
+  },
+  [types.CLEAR_COMMENTS](state, action) {
+    let c = [];
+
+    return {
+      ...state,
+      comment: c,
+    };
+  },
+
+  [types.COMPETITION_CHAT_CONTESTANT_ADDED](state, action) {
+    return {
+      ...state,
+      viewers: action.payload,
+      isLoading: false,
+      success: false,
+      action: COMPETITION_CHAT_CONTESTANT_ADDED,
     };
   },
 });

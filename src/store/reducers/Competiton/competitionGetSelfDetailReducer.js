@@ -11,13 +11,13 @@ const initialState = {
 };
 
 export const competitionGetSelfDetailReducer = createReducer(initialState, {
-  [types.COMPETITION_ACCEPT_TERM_CONDITION_START](state, action) {
+  [types.COMPETITION_GET_SELF_DETAIL_START](state, action) {
     return {
       ...state,
       isLoading: true,
     };
   },
-  [types.COMPETITION_ACCEPT_TERM_CONDITION_SUCCESS](state, action) {
+  [types.COMPETITION_GET_SELF_DETAIL_SUCCESS](state, action) {
     return {
       ...state,
       data: action.payload,
@@ -25,7 +25,7 @@ export const competitionGetSelfDetailReducer = createReducer(initialState, {
       success: true,
     };
   },
-  [types.COMPETITION_ACCEPT_TERM_CONDITION_ERROR](state, action) {
+  [types.COMPETITION_GET_SELF_DETAIL_ERROR](state, action) {
     return {
       ...state,
       data: action.payload,

@@ -5,7 +5,6 @@ import {Verified} from 'src/assets/image/Verified.png';
 import Video from 'react-native-video';
 import { useSelector } from "react-redux";
 import CountDown from 'react-native-countdown-component';
-// import { API_MEDIA, API_URL } from 'src/utils/ApiConstants'
 import ApiConstants from "src/utils/ApiConstants";
 const AdScreen = () => {
 
@@ -13,13 +12,7 @@ const AdScreen = () => {
   const competitionEventReducer = useSelector((state) => state.competitionEventReducer);
 
   useEffect(() => {
-    console.log("CH-00adsRedu",JSON.stringify(competitionEventReducer))
     setAds(competitionEventReducer.ads);
-  }, [competitionEventReducer.ads]);
-  useEffect(() => {
-    const url = `${ApiConstants.API_MEDIA}${encodeURIComponent(competitionEventReducer?.ads?.preRollUrl)}`
-
-    console.log("urlAds",url)
   }, [competitionEventReducer.ads]);
   const CountDownComponent = ({ counto }) => {
     return (
@@ -40,10 +33,8 @@ const AdScreen = () => {
     <View style={style.maincontainer}>
       <Video
         source={{
-          // uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(
-          //   encodeURIComponent(competitionEventReducer?.ads?.preRollUrl)
-          // )}`,
-          uri: `https://www.rmp-streaming.com/media/big-buck-bunny-360p.mp4`,
+            uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(ads?.preRollUrl ? ads?.preRollUrl : ads?.roundAdUrl)}`,
+           //uri: `https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4`,
         }} // Can be a URL or a local file.
         style={style.backgroundVideo}
         resizeMode="cover"
@@ -90,5 +81,6 @@ const AdScreen = () => {
       </View>
     </View>
   );
+
 };
 export default AdScreen;

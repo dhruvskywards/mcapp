@@ -62,7 +62,8 @@ export default ScaledSheet.create({
 
   },
   splitCont:{
-    position: "absolute", top: 0, right: 0, left: 0, bottom: 0
+    flex:1,
+    backgroundColor: theme.BACKGROUND_SECONDARY_DARK
   },
   insideHeader: {
     flex: 0.4,
@@ -96,7 +97,8 @@ export default ScaledSheet.create({
     overflow: 'hidden',
     borderRadius: 25,
     borderWidth:2,
-    borderColor:'#57FFBC'
+    // borderColor:'#57FFBC'
+    borderColor:'green',
   },
   userContImg1:{
     height: scale(35),
@@ -140,6 +142,46 @@ export default ScaledSheet.create({
     height:scale(16),
     width:scale(26),
     alignSelf:'center'
+  },
+  cmtFlstlist:{
+    paddingBottom: scale(20),
+    marginTop: scale(10),
+    maxHeight: scale(230),
+    width: '100%',
+  },
+  cmtFlatlistCont:{
+    marginLeft: scale(10),
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: scale(10),
+  },
+  cmtFlatlistImgCont:{
+    backgroundColor: 'lightgrey',
+    borderRadius: scale(12),
+    height: scale(25),
+    width: scale(25),
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow:'hidden'
+  },
+  cmtuserImg:{
+    height:scale(25),
+    width:scale(25),
+    resizeMode:'stretch',
+  },
+  cmtuserTxt:{
+    fontSize: scale(20),
+    fontWeight: 'bold'
+  },
+  cmtTitleTxt:{
+    color: '#FFF',
+    fontFamily:fonts.Proxima_Nova_Sbold,
+    fontSize: 12
+  },
+  cmtsubTitleTxt:{
+    color: '#FFF',
+    fontFamily:fonts.Proxima_Nova_Regular,
+    fontSize: 9
   },
   comtCont:{
     flexDirection:'row',
@@ -191,6 +233,11 @@ export default ScaledSheet.create({
   },
   nextRoundCont:{
 
+  },
+  gearImg:{
+    height:scale(19),
+    width:scale(19),
+    resizeMode:'contain'
   }
 
 });
