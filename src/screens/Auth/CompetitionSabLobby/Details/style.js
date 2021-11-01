@@ -56,6 +56,11 @@ export default ScaledSheet.create({
     flexDirection: 'row',
     flex: 1,
     justifyContent: 'space-between',
+    paddingHorizontal:scale(15),
+  },
+  seperatorImg:{
+    height:scale(55),
+    width:scale(55)
   },
   TeamContestantInfo: {
     marginTop: verticalScale(20),
@@ -64,7 +69,9 @@ export default ScaledSheet.create({
     flex: 1,
   },
   BlackDiamondInfo: {
-    marginTop: verticalScale(20),
+    paddingHorizontal:scale(15),
+    marginTop: verticalScale(10),
+    marginRight:scale(10),
     // marginHorizontal: scale(30),
     flexDirection: 'row',
     justifyContent: 'space-between',

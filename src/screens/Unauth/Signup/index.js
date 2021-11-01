@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, ScrollView, Pressable, Dimensions} from 'react-native';
 import styles from './style';
 import FooterButton from 'src/components/FooterButton';
@@ -15,13 +15,14 @@ import {scale} from 'react-native-size-matters';
 import fireAuth from '@react-native-firebase/auth';
 import FlashMessage from 'src/components/FlashMessage';
 import {setSessionData} from 'src/utils/asyncStorage';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import * as actions from 'src/store/action/localuserdataAction';
 
 const Signup = ({navigation}) => {
   const dispatch = useDispatch();
   const phoneInput = React.useRef(null);
   const [mail, setMail] = useState('');
+    const [firebaseId, setFirebaseId] = useState();
   const [password, setPassword] = useState('');
   const [hidePass, setHidePass] = useState(true);
   const [emailView, setEmailView] = useState(false);
@@ -32,12 +33,15 @@ const Signup = ({navigation}) => {
   const [valid, setValid] = useState(true);
   const WIDTH = Dimensions.get('window').width / scale(1.03);
 
+
   const registerWithEmail = async () => {
+
     const emailError = validate('email', mail);
     const passwordError = validate('password', password);
     const checkError = validate('check', check);
     const params = {
-      email: mail,
+       email: mail,
+        firebaseId : firebaseId
     };
     if (emailError !== null || passwordError !== null || checkError !== null) {
       FlashMessage.displayMessage({
@@ -49,13 +53,18 @@ const Signup = ({navigation}) => {
       return;
     } else {
       try {
-        fireAuth()
+            fireAuth()
           .createUserWithEmailAndPassword(mail, password)
           .then(res => {
-            setSessionData('authtoken', res.user.uid);
+              setFirebaseId(res?.user?.uid)
+              console.log('firebaseID', JSON.stringify(res));
+            console.log('async data', res.user.email);
+            setSessionData('authtoken', res.user.email);
+            // setSessionData('emailid', mail);
             res?.additionalUserInfo?.isNewUser &&
               navigation.navigate('UserProfile');
-            dispatch(actions.setuserdata(params));
+            dispatch(actions.setuserdata({ email: mail,
+                firebaseId : res?.user?.uid}));
           })
           .catch(error => {
             if (error.code === 'auth/email-already-in-use') {
@@ -66,7 +75,6 @@ const Signup = ({navigation}) => {
                 position: 'top',
               });
             }
-
             if (error.code === 'auth/invalid-email') {
               FlashMessage.displayMessage({
                 message: 'That email address is invalid!',
@@ -87,6 +95,7 @@ const Signup = ({navigation}) => {
         });
       }
     }
+
   };
   const registerWithPhoneNo = async () => {
     if (valid) {

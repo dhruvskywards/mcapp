@@ -5,7 +5,7 @@ import style from './style';
 import FooterButton from 'src/components/FooterButton';
 import theme from 'src/utils/theme';
 import {CommonActions} from '@react-navigation/native';
-import {setSessionData} from 'src/utils/asyncStorage';
+import {setSessionData, getSessionData} from 'src/utils/asyncStorage';
 import {useDispatch, useSelector} from 'react-redux';
 import * as actions from 'src/store/action/intrestListAction';
 import * as pushdataaction from 'src/store/action/localuserdataAction';
@@ -29,19 +29,30 @@ const Step3 = ({navigation}) => {
   }, []);
   const intrestdata = useSelector(state => state?.intrestList?.intrest);
   const [selectedid, setSelectedid] = useState([]);
+  const [email, setEmail] = useState();
 
   const userdata = useSelector(state => state?.localuserdata?.userdata);
 
+    useEffect(async () => {
+        const emailid = await getSessionData('authtoken');
+        setEmail(emailid);
+    }, []);
   console.log('Selected id==>', selectedid);
+  console.log('userData==>', JSON.stringify(userdata));
 
   const signup = () => {
     const params = {
-      email: userdata.email,
+      firebaseId:userdata?.firebaseId,
+      email: email,
       username: userdata.username,
       gender: userdata.gender,
+        phone:email,
       profilepic: userdata.profilepic,
       intrestIds: selectedid,
       dob: userdata.DOB,
+      location:'gujarat',
+      country:'india'
+
     };
     setSessionData('userformFlag', '1');
     return navigation.dispatch(
@@ -50,11 +61,13 @@ const Step3 = ({navigation}) => {
         postdataaction.userDataPost(
           params,
           res => {
+            console.log(res)
             dispatch(
               userActions.GetUserProfile(
                 userdata.email,
                 async data => {
-                  setSessionData(sessionKey.userData, JSON.stringify(data));
+                    console.log(data);
+                  await setSessionData(sessionKey.userData, JSON.stringify(data));
                 },
                 error => {
                   //show err
@@ -63,7 +76,9 @@ const Step3 = ({navigation}) => {
               ),
             );
           },
-          e => {},
+          e => {
+            console.log(e);
+          },
         ),
       ),
     );

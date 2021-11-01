@@ -79,3 +79,42 @@ export const PrizeDetails = [
       'Late entries 2 minutes into this competition will not be eligible for audience prize payouts. All ties will be split evenly or will be subject to a tie breaker mini-game. Please see terms & conditions.',
   },
 ];
+
+export const EditPhotoOptions = [
+  {
+    title: 'Contrast',
+    image: require('src/assets/image/Contrast.png'),
+  },
+  {
+    title: 'Brightness',
+    image: require('src/assets/image/Brightness.png'),
+  },
+  {
+    title: 'Saturation',
+    image: require('src/assets/image/Saturation.png'),
+  },
+  {
+    title: 'HueRotate',
+    image: require('src/assets/image/Structure.png'),
+  },
+  {
+    title: 'Temprature',
+    image: require('src/assets/image/Warmth.png'),
+  },
+  {
+    title: 'Tint',
+    image: require('src/assets/image/ComicPattern.png'),
+  },
+  {
+    title: 'Threshold',
+    image: require('src/assets/image/RGB.png'),
+  },
+  {
+    title: 'Night',
+    image: require('src/assets/image/Vibrance.png'),
+  },
+  {
+    title: 'Predator',
+    image: require('src/assets/image/Sharpen.png'),
+  },
+];

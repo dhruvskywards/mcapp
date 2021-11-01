@@ -2,6 +2,7 @@ import {scale, ScaledSheet} from 'react-native-size-matters';
 import fonts from 'src/utils/fonts';
 import theme from 'src/utils/theme';
 
+
 export default ScaledSheet.create({
   maincontainer: {
     flex: 1,
@@ -35,6 +36,7 @@ export default ScaledSheet.create({
   StoryView: {
     flexDirection: 'row',
     marginHorizontal: scale(18),
+    alignItems: 'center',
   },
   ModalContain: {
     borderTopLeftRadius: 8,

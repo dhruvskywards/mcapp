@@ -1,5 +1,5 @@
-import React, {createRef, useEffect, useState, useCallback} from 'react';
-import {View, Image, ScrollView, Text, FlatList} from 'react-native';
+import React, {createRef, useEffect, useState, useCallback, useReducer} from 'react';
+import {View, Image, ScrollView, Text, FlatList,BackHandler,Alert,AppState} from 'react-native';
 import style from './style';
 import {useNavigation, useTheme} from '@react-navigation/native';
 import CompetitionBanner from '../../../../assets/image/CompetitionBanner.png';
@@ -12,35 +12,40 @@ import BlackDiamondView from '../../../../components/BlackDiamondView';
 import TeamProfile from '../../../../components/TeamProfile';
 import {UserData} from '../../../../constants/mock-data';
 import ActionSheet from 'react-native-actions-sheet';
-  import { connect, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  COMPETITION_PARTICIPANT_STARTING,
-  COMPETITION_PARTICIPANT_STARTED,
-  COMPETITION_ENDED,
-  COMPETITION_PARTICIPANTS_ADDED,
-  COMPETITION_VIEWERS_ADDED,
-  COMPETITION_ROUND_STARTING,
-  COMPETITION_ROUND_STARTED,
-  COMPETITION_AD_STARTING,
-  COMPETITION_AD_STARTED,
-  COMPETITION_AD_ENDED,
-  COMPETITION_PREROLL_STARTING,
-  COMPETITION_PREROLL_STARTED,
-  COMPETITION_PREROLL_ENDED,
-  COMPETITION_YOURTURN_STARTING,
-  COMPETITION_YOURTURN_STARTED,
-  COMPETITION_UPDATEPOINTS,
-  COMPETITION_BEAT_VOTE_UPDATE,
-  COMPETITION_CONTESTANT_INFO_STARTING,
-  COMPETITION_CONTESTANT_INFO_STARTED,
-  NEW_COMMENTS,
-  TEST,
-} from '../../../../store/actionType';
+    COMPETITION_PARTICIPANT_STARTING,
+    COMPETITION_PARTICIPANT_STARTED,
+    COMPETITION_ENDED,
+    COMPETITION_PARTICIPANTS_ADDED,
+    COMPETITION_VIEWERS_ADDED,
+    COMPETITION_ROUND_STARTING,
+    COMPETITION_ROUND_STARTED,
+    COMPETITION_AD_STARTING,
+    COMPETITION_AD_STARTED,
+    COMPETITION_AD_ENDED,
+    COMPETITION_PREROLL_STARTING,
+    COMPETITION_PREROLL_STARTED,
+    COMPETITION_PREROLL_ENDED,
+    COMPETITION_YOURTURN_STARTING,
+    COMPETITION_YOURTURN_STARTED,
+    COMPETITION_UPDATEPOINTS,
+    COMPETITION_BEAT_VOTE_UPDATE,
+    COMPETITION_CONTESTANT_INFO_STARTING,
+    COMPETITION_CONTESTANT_INFO_STARTED,
+    NEW_COMMENTS, COMPETITION_ACCEPT_TERM_CONDITION_SUCCESS,
+    COMPETITION_BEAT_VOTE_SUCCESS,
+    COMPETITION_GET_SELF_DETAIL_SUCCESS,
+    COMPETITION_CHAT_CONTESTANT_ADDED,
+    COMPETITION_CHAT_AUDIENCE_ADDED, COMPETITION_BEAT_VOTE_STATUS
+} from "../../../../store/actionType";
 import {getSessionData} from 'src/utils/asyncStorage'
 import sessionKey from 'src/utils/const'
 import ApiConstants from "../../../../utils/ApiConstants";
 import TrackPlayer, { usePlaybackState, STATE_PLAYING } from 'react-native-track-player';
+import * as actions from "../../../../store/action/Competition/competitionBeatVoteAction";
+import * as action1 from "../../../../store/action/Competition/CompetitionGetSelfDetailAction";
 
 
 const actionSheetRef = createRef();
@@ -56,38 +61,141 @@ const Details = ({room, item, competitionDetail, type}) => {
   const [roomDetailEvent, setRoomDetailEvent] = useState(null);
   const [competitionViewers, setCompetitionViewers] = useState([]);
   const [competitionParticipants, setCompetitionParticipants] = useState([]);
+  const [competitionContestant, setCompetitionContestant] = useState([]);
+    const [voteSuccess, setVoteSuccess] = useState('');
   const [competitionBeats, setCompetitionBeats] = useState({});
-  const [competionStart, setCompetionStart] = useState(false);
   const [beatPlayingId, setBeatPlayingId] = useState();
-  const competitionEventReducer = useSelector((state) => state.competitionEventReducer);
-    const [userId, setUserId] = useState(null);
-    useEffect(async ()=>{
+  const competitionEventReducer = useSelector(
+    state => state.competitionEventReducer,
+  );
+  const [userId, setUserId] = useState(null);
+  const [competitionSelfData, setCompetitionSelfData] = useState({});
+  const [Visible, setVisible] = useState(false);
+  const competitionGetSelfDetailReducer = useSelector(
+    state => state.competitionGetSelfDetailReducer,
+  );
+  const competitionBeatVoteReducer = useSelector(
+    (state) => state.competitionBeatVoteReducer);
+
+  useEffect(() => {
+    if (competitionGetSelfDetailReducer.success) {
+      setCompetitionSelfData(competitionGetSelfDetailReducer.data);
+    }
+  }, [competitionGetSelfDetailReducer.success, competitionGetSelfDetailReducer.data]);
+
+  useEffect(async ()=>{
       const user = JSON.parse(await getSessionData(sessionKey.userData));
       setUserId(user.id)
     },[])
-  useEffect(() => {
-    setCompetitionBeats(competitionDetail?.competitionBeat);
-  }, [competitionDetail.competitionBeat]);
+  // useEffect(() => {
+  //   setCompetitionBeats(competitionDetail?.competitionBeat);
+  // }, [competitionDetail.competitionBeat]);
+  // useEffect(() => {
+  //   if (
+  //     competitionBeatVoteReducer.success
+  //     // && competitionBeatVoteReducer.type === COMPETITION_BEAT_VOTE_UPDATE
+  //   ) {
+  //     setCompetitionBeats(competitionBeatVoteReducer.data);
+  //   }
+  // }, [
+  //   competitionBeatVoteReducer.data,
+  //   competitionBeatVoteReducer.success,
+  //   // competitionBeatVoteReducer.type,
+  // ]);
 
   useEffect(() => {
-    // debugger;
+    if (competitionBeatVoteReducer.success) {
+      const competitionData = {
+        type: type === 'aud' ? 'Viewer' : 'Participant',
+        userId: userId,
+        competitionId: competitionDetail.id,
+      };
+      dispatch(
+        action1.CompetitionGetSelfDetailAction(
+          competitionData,
+          async success => {
+            dispatch(
+              { type:COMPETITION_GET_SELF_DETAIL_SUCCESS, payload: success },
+            )
+          },
+          error => {
+            console.log(error)
+          },
+        )
+      )
+    }
+    if (competitionBeatVoteReducer.error) {
+      Alert.alert(competitionBeatVoteReducer.data.message);
+      competitionBeatVoteReducer.error = false;
+    }
+  }, [
+    competitionBeatVoteReducer,
+    competitionDetail.id,
+    type,
+    userId,
+  ]);
+  useEffect(() => {
+    AppState.addEventListener('change', handleChange);
+    return () => {
+      AppState.removeEventListener('change', handleChange);
+    }
+  }, []);
+  const handleChange = (newState) => {
+    if (newState === "background") {
+      TrackPlayer.stop()
+    }
+  }
+  useEffect(() => {
+    const backActionDetail = () => {
+      Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {
+          text: 'YES',
+          onPress: () => {
+            if(room){
+              room.onLeave(('competition', {
+                competitionId: competitionDetail.id,
+                type: type === 'aud' ? 'viewer' : 'participant',
+                userId: userId,
+              }))
+              TrackPlayer.stop();
+            }
+
+            navigation.goBack();
+          },
+        },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backActionDetail);
+
+    return () => backHandler.remove();
+  }, [navigation, roomDetail, roomDetailEvent]);
+
+  useEffect(() => {
     if (room) {
       setRoomDetail(room.id);
       setRoomDetailEvent(room);
       setCurrentSessionId(room.sessionId);
-      setCompetitionParticipants([...room.state.participantsList]);
+      setCompetitionParticipants([...room.state.participants]);
       setCompetitionViewers([...room.state.viewers]);
-      console.log('beat--->>', room.state.beat);
+      // setCompetitionContestant([...room.state.contestant]);
       setCompetitionBeats(room.state.beat);
+
+
       room.onError((code, message) => {
         console.log(message);
-
         console.log(client.id, "couldn't join", room.name);
       });
       room.state.messages.onAdd = function (message, sessionId) {
         console.log('Data==>', message);
       };
-      room.state.participantsList.onAdd = function (message, sessionId) {
+      room.state.participants.onAdd = function (message, sessionId) {
         console.log(message);
       };
       room.state.participants.onAdd = function (message, sessionId) {
@@ -95,8 +203,9 @@ const Details = ({room, item, competitionDetail, type}) => {
           type: COMPETITION_PARTICIPANTS_ADDED,
           payload: room.state.participants,
         });
-        setCompetitionParticipants([...room.state.participantsList]);
+        setCompetitionParticipants([...room.state.participants]);
         console.log(room.state.participants);
+
       };
       room.state.viewers.onAdd = function (message, sessionId) {
         dispatch({
@@ -106,14 +215,32 @@ const Details = ({room, item, competitionDetail, type}) => {
         setCompetitionViewers([...room.state.viewers]);
         console.log(room.state.viewers);
       };
+        room.state.beat.onAdd = function () {
+            setCompetitionBeats(room.state.beat);
+            // console.log("CH-vote00",JSON.stringify(room.state.beat))
+            dispatch({
+                type: COMPETITION_BEAT_VOTE_UPDATE,
+                payload: room.state.beat,
+            });
+        };
+      room.state.beat.onChange = function (message){
+         // console.log("CH-Vote0update",JSON.stringify(message))
 
+          const voteCheck = room.state.beat.map((item)=>(
+              item.id == message.id ?
+                  {...item, isVoted: true,votes:message.votes}
+                  : {...item, isVoted: false,votes:message.votes}) )
+          // : item) )
+          setCompetitionBeats(voteCheck)
+        //setCompetitionBeats(message)
+    }
       room.state.participants.onRemove = function (message, sessionId) {
         dispatch({
           type: COMPETITION_PARTICIPANTS_ADDED,
           payload: room.state.participants,
         });
         console.log(message);
-        setCompetitionParticipants([...room.state.participantsList]);
+        setCompetitionParticipants([...room.state.participants]);
       };
       room.state.viewers.onRemove = function (message, sessionId) {
         console.log(message);
@@ -128,6 +255,7 @@ const Details = ({room, item, competitionDetail, type}) => {
       room.onMessage('competitionStarting', function (message) {
         console.log(message);
       });
+
       room.onMessage('addStarting', function (message) {
         dispatch({type: COMPETITION_AD_STARTING, payload: message});
         console.log(message);
@@ -137,9 +265,8 @@ const Details = ({room, item, competitionDetail, type}) => {
       });
       room.onMessage('addStarted', function (message) {
         dispatch({type: COMPETITION_AD_STARTED, payload: message});
-        console.log('CH-ads', message);
+        console.log(message);
         try {
-          console.log('CH-ads11', message);
           navigation.navigate('AdScreen');
         } catch (e) {
           alert(e);
@@ -152,14 +279,6 @@ const Details = ({room, item, competitionDetail, type}) => {
       room.onMessage('preRollStarted', function (message) {
         dispatch({type: COMPETITION_PREROLL_STARTED, payload: message});
         onStream();
-        // if (competitionDetail.type.name === 'Live-Stream') {
-        //   setCompetionStart(true);
-        //   if (type === 'aud') {
-        //     onViewStream();
-        //   } else {
-        //     onStream();
-        //   }
-        // }
       });
       room.onMessage('contestantInfoStarting', function (message) {
         dispatch({
@@ -167,12 +286,10 @@ const Details = ({room, item, competitionDetail, type}) => {
           payload: message,
         });
         console.log(message);
-        // navigation.navigate(Globals.SCREENS.AD_SCREEN);
       });
       room.onMessage('contestantInfoStarted', function (message) {
         dispatch({type: COMPETITION_CONTESTANT_INFO_STARTED, payload: message});
-        console.log('CH-D-conInfo', message);
-        // navigation.navigate(Globals.SCREENS.AD_SCREEN);
+        console.log(message);
       });
       room.onMessage('roundStarting', function (message) {
         dispatch({type: COMPETITION_ROUND_STARTING, payload: message});
@@ -200,8 +317,9 @@ const Details = ({room, item, competitionDetail, type}) => {
       room.state.comment.onAdd =  function (message) {
         let newData = {...message,timestamp: new Date().getTime()}
         dispatch({ type: NEW_COMMENTS, payload: newData });
-        console.log("COMMENT",JSON.stringify(message));
+        console.log(message);
       };
+
       room.onMessage('message', function (message) {
         console.log(message);
       });
@@ -210,14 +328,9 @@ const Details = ({room, item, competitionDetail, type}) => {
       });
       room.onMessage('endTickEvent', function (message) {
         // console.log(message);
+
       });
-      room.state.beat.onAdd = function () {
-        setCompetitionBeats(room.state.beat);
-        dispatch({
-          type: COMPETITION_BEAT_VOTE_UPDATE,
-          payload: room.state.beat,
-        });
-      };
+
       // room.onMessage('competitionBeatVote', function (message) {
       //   dispatch({ type: COMPETITION_BEAT_VOTE_UPDATE, payload: message });
       //   setCompetitionBeats(message);
@@ -226,16 +339,7 @@ const Details = ({room, item, competitionDetail, type}) => {
         console.error(message);
       });
       room.onMessage('addEnded', function (message) {
-        dispatch({ type: COMPETITION_AD_ENDED, payload: message });
-        console.log(message);
-        // if (competitionDetail.type.name === 'Live-Stream') {
-        //   setCompetionStart(true);
-        //   if (type === 'aud') {
-        //     onViewStream();
-        //   } else {
-        //     onStream();
-        //   }
-        // }
+        dispatch({type: COMPETITION_AD_ENDED, payload: message});
         console.log(message);
       });
       room.onMessage('preRollEnded', function (message) {
@@ -254,6 +358,7 @@ const Details = ({room, item, competitionDetail, type}) => {
         dispatch({type: COMPETITION_UPDATEPOINTS, payload: message});
         console.log(message);
       });
+
     }
   }, [room]);
 
@@ -266,6 +371,7 @@ const Details = ({room, item, competitionDetail, type}) => {
         competitionParticipants,
         userId: userId,
         room,
+        type
       });
     },
     [
@@ -287,15 +393,25 @@ const Details = ({room, item, competitionDetail, type}) => {
               <UserProfile
                  url={{ uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(competitionParticipants[0]?.profilepic)}` }}
                 name={competitionParticipants[0]?.username}
-                type={competitionParticipants[0]?.interest[0]?.name}
+                 type={ competitionParticipants[0]?.interest.length ==1 ? competitionParticipants[0]?.interest[0].name :  ''
+                 ||  competitionParticipants[0]?.interest.length >= 1 ? competitionParticipants[0]?.interest[0]?.name + ' '+'/'+' '+
+                     competitionParticipants[0]?.interest[1]?.name : ''
+                 }
+                 // type={competitionParticipants[0]?.interest[0]?.name}
               />
             </View>
-            <Image source={Seprator} />
+            <Image source={Seprator} style={style.seperatorImg}/>
             <View>
               <UserProfile
                 url={{ uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(competitionParticipants[1]?.profilepic)}` }}
                 name={competitionParticipants[1]?.username}
-                type={competitionParticipants[1]?.interest[0]?.name}
+                  // type={user?.interest.length == 1 ? user?.interest[0]?.name : ''
+                  // || user?.interest.length >= 1 ? user?.interest[0]?.name + ' '+'/'+' '+ user?.interest[1]?.name : ''
+                  // }
+                type={ competitionParticipants[1]?.interest.length ==1 ? competitionParticipants[1]?.interest[0].name :  ''
+                  ||  competitionParticipants[1]?.interest.length >= 1 ? competitionParticipants[1]?.interest[0]?.name + ' '+'/'+' '+
+                    competitionParticipants[1]?.interest[1]?.name : ''
+                }
               />
             </View>
           </View>
@@ -305,7 +421,7 @@ const Details = ({room, item, competitionDetail, type}) => {
             />
             <Text
               style={[style.SubtitleText, {color: CustomTheme.colors.text}]}>
-              {competitionEventReducer?.round?.round} Rounds
+               Rounds {competitionDetail?.competitionOption?.rounds}
             </Text>
             <BlackDiamondView
               diamond={competitionParticipants[1]?.wallet?.blackDiamonds}
@@ -355,72 +471,109 @@ const Details = ({room, item, competitionDetail, type}) => {
     }
   };
 
-  const RenderBeats = ({        beats,
-                                //onViewStream,
-                                // onVote,
-                                // selfBeatVoteId,
-                                setBeatPlayingId,
-                                beatPlayingId,
-                              }) => {
+  const voted = (id) =>{
+      console.log("CH-Vote01ID",id)
+        const voteCheck = competitionBeats.map((item)=>(
+            item.id == id ?
+            {...item, isVoted: true}
+            : {...item, isVoted: false}) )
+  // : item) )
+        setCompetitionBeats(voteCheck)
+    }
+  const Vote = (id) => {
+      // console.log("CH-VoteID",id)
+    const postdata1 = {
+      id,
+      userId,
+    };
+    dispatch(
+      actions.CompetitionBeatVoteAction(
+        postdata1,
+        async success => {
+          console.log("491",success)
+            // setVoteSuccess(success?.competitionBeatVote)
+            // voted(id)
+        },
+        error => {
+          console.log(error)
+        },
+      ),
+    );
+  };
+
+  const RenderBeats = ({
+    beats,
+    //onViewStream,
+    onVote,
+    selfBeatVoteId,
+    setBeatPlayingId,
+    beatPlayingId,
+  }) => {
+
     const [currentTrackId, setCurrentTrackId] = useState();
     const playerState = usePlaybackState();
     useEffect(() => {
-      if (playerState == TrackPlayer.STATE_READY || playerState == TrackPlayer.STATE_PAUSED) {
-        TrackPlayer.play();
+      if (competitionEventReducer.action === COMPETITION_AD_STARTING) {
+        TrackPlayer.stop();
       }
-    }, [playerState]);
-    var rows = [];
-    for (var i = 0; i < beats?.length; i++) {
-      const beatId = beats[i].id;
-      rows.push(
-        <BeatPlay
-          header={beats[i].beatName}
-          //backGroundColor={style.Beat1}
-          //music={beats[i]?.beatUrl}
-          music={'url: `https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3`'}
-          // subheader={beats[i].votes}
-          // btntext={'Vote'}
-          // // imguri={require('../../../Assets/Icons/player.png')}
-          // //onpressevent={() => onVote(beatId)}
-          // //selfBeatVoteId={selfBeatVoteId}
-          // id={beats[i].id}
-          // setPlaying={(id) => {
-          //   setBeatPlayingId(id);
-          // }}
-          // beatPlayingId={beatPlayingId}
-          // currentTrackId={currentTrackId}
-          playTrack={async (musicUrl, header, isstarted, id) => {
-            setCurrentTrackId(id);
-            const state = await TrackPlayer.getState();
-            if (state === TrackPlayer.STATE_PLAYING) {
-              await TrackPlayer.reset();
-              if (isstarted) return;
-            }
-            await TrackPlayer.add({
-              id: beatPlayingId,
-              url: `${ApiConstants.API_MEDIA}${encodeURIComponent(musicUrl)}`,
-              //url: `https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3`,
-              title: header,
-              artist: header,
-            });
-          }}
-        />
-      );
-    }
+    }, [competitionEventReducer.action]);
+    // useEffect(() => {
+    //   if (playerState == TrackPlayer.STATE_READY || playerState == TrackPlayer.STATE_PAUSED) {
+    //     TrackPlayer.play();
+    //   }
+    // }, [playerState]);
+useEffect(()=>{
+    console.log("CH-VoteIDBeatPlay",JSON.stringify(beats))
+
+})
     return (
       <View>
-        <BeatPlay backGroundColor={style.Beat1} />
-        <BeatPlay backGroundColor={style.Beat2} />
+        {/*<BeatPlay backGroundColor={style.Beat1} />*/}
+        {/*{rows}*/}
+          <FlatList
+              nestedScrollEnabled={true}
+               data={beats}
+              extraData={beats}
+              renderItem={({item}) => (
+                  <View style={{}}>
+                        <BeatPlay
+                          item={item}
+                          header={item?.beatName}
+                          backGroundColor={style.Beat1}
+                          music={item?.beatUrl}
+                          subheader={item?.votes}
+                          onpressevent ={() => onVote(item?.id)}
+                          selfBeatVoteId={selfBeatVoteId}
+                          id={item?.id}
+                          setPlaying={(id) => {
+                            setBeatPlayingId(id);
+                          }}
+                          beatPlayingId={beatPlayingId}
+                           currentTrackId={currentTrackId}
+                          playTrack={async (musicUrl, header, isstarted, id) => {
+                            setCurrentTrackId(id);
+                            const state = await TrackPlayer.getState();
+                            if (playerState == 3) {
+                              TrackPlayer.pause();
+                            }else {
+                              TrackPlayer.play();
+                            }
+                            if (state === TrackPlayer.STATE_PLAYING) {
+                              await TrackPlayer.reset();
+                              if (isstarted) return;
+                            }
+                            await TrackPlayer.add({
+                              id: beatPlayingId,
+                              url: `${ApiConstants.API_MEDIA}${encodeURIComponent(musicUrl)}`,
+                              title: header,
+                              artist: header,
+                            });
+                          }}
+                        />
+                  </View>
+              )}
+          />
       </View>
-      // <View    style={[
-      //   style.insideContainer,
-      //   {backgroundColor: CustomTheme.colors.background},
-      // ]}>
-      //   {/*<Contesttype />*/}
-      //   <Text style={[style.titleText, {color: CustomTheme.colors.text}]}>
-      //   {rows}
-      //   </Text>
-      // </View>
     );
   }
 
@@ -442,13 +595,11 @@ const Details = ({room, item, competitionDetail, type}) => {
               <RenderBeats
                 beats={competitionBeats}
                 //onViewStream={onViewStream}
-                //onVote={Vote}
+                onVote={Vote}
                 setBeatPlayingId={setBeatPlayingId}
                 beatPlayingId={beatPlayingId}
-                //selfBeatVoteId={competitionSelfData?.beatVote?.id}
+                selfBeatVoteId={competitionSelfData?.beatVote?.id}
               />
-             {/*<BeatPlay backGroundColor={style.Beat1} />*/}
-             {/* <BeatPlay backGroundColor={style.Beat2} />*/}
               <Text style={[style.titleText, {color: CustomTheme.colors.text}]}>
                 Audience
               </Text>
@@ -458,11 +609,14 @@ const Details = ({room, item, competitionDetail, type}) => {
                 renderItem={({item}) => (
                   <View style={style.AudienceView}>
                     <UserProfile
-                      url={item.url}
+                      url={{ uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(item?.profilepic)}` }}
                       name={item.username}
-                      type={
-                        item.interest[0]?.name + '/' + item.interest[1]?.name
+                      type={item?.interest.length == 1 ? item?.interest[0]?.name : ''
+                      || item?.interest.length >= 1 ? item?.interest[0]?.name + ' '+'/'+' '+ item?.interest[1]?.name : ''
                       }
+                      // type={
+                      //   item.interest[0]?.name + '/' + item.interest[1]?.name
+                      // }
                       HorizontalView={style.DetailView}
                       style={style.flexDirection}
                     />
