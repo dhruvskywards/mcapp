@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "585440291871-otst3f31o6vsgtk9oc3php9lslkdd2qc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.masterofceremony",
+            "certificate_hash": "b9426409ef14dd5fb7d0816fdcd1d316b7ac7713"
+          }
+        },
+        {
           "client_id": "585440291871-0int2m3ihosqjp2nup4n58kg1bi8d4dq.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -51,6 +59,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "585440291871-mggv981du6bj5kag1kmv3isojqpre5vf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mc",
+            "certificate_hash": "b9426409ef14dd5fb7d0816fdcd1d316b7ac7713"
+          }
+        },
+        {
           "client_id": "585440291871-0int2m3ihosqjp2nup4n58kg1bi8d4dq.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -79,6 +95,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "585440291871-qnfbkm2g8vko2oq4shedfbii9f9l21up.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mcmasterofceremony",
+            "certificate_hash": "b9426409ef14dd5fb7d0816fdcd1d316b7ac7713"
+          }
+        },
         {
           "client_id": "585440291871-0int2m3ihosqjp2nup4n58kg1bi8d4dq.apps.googleusercontent.com",
           "client_type": 3

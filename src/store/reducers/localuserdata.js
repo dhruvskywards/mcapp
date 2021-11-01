@@ -4,6 +4,7 @@ import {isObjectEmpty} from '../../utils/validation';
 
 const initialState = {
   userdata: {},
+  url: {},
 };
 
 export const localuserdata = createReducer(initialState, {
@@ -11,6 +12,17 @@ export const localuserdata = createReducer(initialState, {
     return {
       ...state,
       userdata: isObjectEmpty(state.userdata)
+        ? {...action.payload}
+        : {...state.userdata, ...action.payload},
+    };
+  },
+});
+
+export const storySelectedUrl = createReducer(initialState, {
+  [types.SET_STORY_SELECTED_URL](state = initialState, action) {
+    return {
+      ...state,
+      url: isObjectEmpty(state.url)
         ? {...action.payload}
         : {...state.userdata, ...action.payload},
     };

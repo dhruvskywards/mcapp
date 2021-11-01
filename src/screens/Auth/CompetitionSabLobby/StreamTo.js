@@ -1,11 +1,24 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Image, Keyboard, PermissionsAndroid, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import * as Colyseus from "colyseus.js";
-import Video from "react-native-video";
-import { NodeCameraView, NodePlayerView } from "react-native-nodemediaclient";
-import { useSelector } from "react-redux";
+import React, {useEffect, useRef, useState} from 'react';
+import {
+  Alert, AppState, BackHandler,
+  FlatList,
+  Image,
+  Keyboard,
+  PermissionsAndroid,
+  Pressable,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import * as Colyseus from 'colyseus.js';
+import Video from 'react-native-video';
+import {NodeCameraView, NodePlayerView} from 'react-native-nodemediaclient';
+import {useSelector} from 'react-redux';
 import ProgressBar from 'react-native-progress/Bar';
+import BottomSheet from 'reanimated-bottom-sheet';
+import HintSheet from '../../../components/HintSheet';
 import {
   COMPETITION_AD_ENDED,
   COMPETITION_AD_STARTED,
@@ -26,7 +39,7 @@ import {
 import {getSessionData} from '../../../utils/asyncStorage';
 import sessionKey from '../../../utils/const';
 import ApiConstants from 'src/utils/ApiConstants';
-// import style from "../PlayScreen/style";
+import StreamProgress from '../../../components/StreamProgress';
 import style from './style';
 import eye from '../../../assets/image/eye.png';
 import SmallLogo from '../../../assets/image/SmallLogo.png';
@@ -37,53 +50,42 @@ import hint from 'src/assets/image/hint.png';
 import cmmt from 'src/assets/image/cmmt.png';
 import CompetitionEnded from './CompetitionEnded';
 import _ from 'lodash';
+import RateSheet from '../../../components/RateSheet';
+import TrackPlayer from "react-native-track-player";
+import {competitionBeatVoteReducer} from "../../../store/reducers/Competiton/competitionBeatVoteReducer";
 const client = new Colyseus.Client('ws://34.235.198.223:8001');
 var Sound = require('react-native-sound');
-var whoosh;
-// const _ = require("lodash");
+let whoosh;
 const Comment = ({data}) => {
-  //let d = _.orderBy(data, ["timestamp", "desc"]);
-  // let d1 = _.sortBy(data,["timestamp", "asc"])
-  // console.log("CH-comment",JSON.stringify(d));
   return (
     <View>
       <FlatList
         data={data}
         // extraData={d}
         keyExtractor={(item, index) => 'key' + index}
-        style={{
-          paddingBottom: 20,
-          marginTop: 10,
-          maxHeight: 230,
-          width: '100%',
-        }}
+        style={style.cmtFlstlist}
         inverted
         renderItem={({item, index}) => (
-          <View
-            style={{
-              marginLeft: 10,
-              alignItems: 'center',
-              flexDirection: 'row',
-              marginTop: 10,
-            }}>
-            <View
-              style={{
-                backgroundColor: 'lightgrey',
-                borderRadius: 50,
-                height: 50,
-                width: 50,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Text style={{fontSize: 30, fontWeight: 'bold'}}>
-                {item.username.substring(0, 1)}
-              </Text>
+          <View style={style.cmtFlatlistCont}>
+            <View style={style.cmtFlatlistImgCont}>
+              {item?.profilepic ? (
+                <Image
+                  source={{
+                    uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(
+                      item?.profilepic,
+                    )}`,
+                  }}
+                  style={style.cmtuserImg}
+                />
+              ) : (
+                <Text style={style.cmtuserTxt}>
+                  {item.username.substring(0, 1)}
+                </Text>
+              )}
             </View>
             <View style={{marginLeft: 20}}>
-              <Text style={{color: '#FFF', fontWeight: 'bold', fontSize: 12}}>
-                {item.username}
-              </Text>
-              <Text style={{color: '#FFF', fontSize: 9}}>{item.comment}</Text>
+              <Text style={style.cmtTitleTxt}>{item.username}</Text>
+              <Text style={style.cmtsubTitleTxt}>{item.comment}</Text>
             </View>
           </View>
         )}
@@ -94,6 +96,10 @@ const Comment = ({data}) => {
 };
 const StreamTo = ({route, theme}) => {
   const navigation = useNavigation();
+  const hintRef = useRef();
+  const RateRef = useRef();
+
+  const [selected, setSelected] = useState();
   const [isPreRollPlaying, setIsPreRollPlaying] = useState(false);
   const {
     currentSessionId,
@@ -102,19 +108,17 @@ const StreamTo = ({route, theme}) => {
     competitionParticipants,
     userId,
     room,
+    type,
   } = route.params;
   const competitionEventReducer = useSelector(
     state => state.competitionEventReducer,
   );
-  const [yourStream, setYourStream] = useState({});
-  const [issplit, setIssplit] = useState(true);
   const [participants, setParticipants] = useState([]);
   const [preRollUrl, setPreRollUrl] = useState('');
   const [myuserId, setMyuserId] = useState('');
   const [commentPost, setCommentPost] = useState('');
   const [currentRound, setCurrentRound] = useState({});
   const [points, setPoints] = useState({});
-  const [currentPreRoll, setCurrentPreRoll] = useState({});
   const [loaderProgress, setLoaderProgress] = useState(10);
   const [currentParticipant, setCurrentParticipant] = useState(false);
   let vb = useRef();
@@ -127,10 +131,10 @@ const StreamTo = ({route, theme}) => {
   //const comment = useSelector((state) => state.competitionEventReducer);
 
   const currentUser = participants.find(
-    participant => participant.id === myuserId,
+    participants => participants.id === myuserId,
   );
   const otherUser = participants.find(
-    participant => participant.id != myuserId,
+    participants => participants.id != myuserId,
   );
 
   useEffect(async () => {
@@ -160,6 +164,48 @@ const StreamTo = ({route, theme}) => {
     }
   }, []);
   useEffect(() => {
+    AppState.addEventListener('change', handleChange);
+    return () => {
+      AppState.removeEventListener('change', handleChange);
+    }
+  }, []);
+  const handleChange = (newState) => {
+    if (newState === "background") {
+      TrackPlayer.stop()
+    }
+  }
+  useEffect(() => {
+    const backActionDetail = () => {
+      Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {
+          text: 'YES',
+          onPress: () => {
+            if(room){
+              room.onLeave(('competition', {
+                competitionId: competitionDetail.id,
+                type: type === 'aud' ? 'viewer' : 'participant',
+                userId: userId,
+              }))
+              vb.current.stop();
+            }
+            navigation.goBack();
+          },
+        },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', backActionDetail);
+
+    return () => backHandler.remove();
+  }, [navigation, roomDetail]);
+
+  useEffect(() => {
     if (competitionEventReducer.action === COMPETITION_PARTICIPANT_STARTED) {
       try {
         vb.current.stop();
@@ -172,12 +218,6 @@ const StreamTo = ({route, theme}) => {
   useEffect(() => {
     setParticipants(competitionEventReducer.participants);
   }, [competitionEventReducer.participants]);
-  useEffect(() => {
-    setCurrentRound(competitionEventReducer.round);
-    setCurrentPreRoll(competitionEventReducer?.preRoll);
-    setPoints(competitionEventReducer?.points);
-    setLoaderProgress(60);
-  }, []);
 
   useEffect(() => {
     console.log('PreRollURL==>', preRollUrl);
@@ -185,26 +225,32 @@ const StreamTo = ({route, theme}) => {
       if (whoosh) {
         whoosh.stop();
       }
+      //setLoaderProgress(5);
       // startCountDown();
     }
     if (competitionEventReducer.action === COMPETITION_PARTICIPANT_STARTED) {
       setIsPreRollPlaying(false);
       PlaySound(currentRound?.beat?.beatUrl);
       setCurrentParticipant(competitionEventReducer.participant);
-          console.log("CH-CP",JSON.stringify(competitionEventReducer.participant))
-      // var progress = competitionEventReducer?.participant?.rounds?.filter(
-      //   (m) => m.round === currentRound?.round
-      // );
-      // Promise.all(progress);
-      setLoaderProgress(120);
+      var progress = competitionEventReducer?.participant?.rounds?.filter(
+        m => m.round === currentRound?.round,
+      );
+      Promise.all(progress);
+      if (progress.length > 0) {
+        setLoaderProgress(progress[0]?.duration);
+      } else {
+        setLoaderProgress(currentUser?.rounds[0].duration);
+      }
     }
     if (competitionEventReducer.action === COMPETITION_ROUND_STARTING) {
+      setCurrentRound(competitionEventReducer.round);
       setIsPreRollPlaying(true);
       // startCountDown();
     }
     if (competitionEventReducer.action === COMPETITION_ROUND_STARTED) {
       // setStreamUrl(competitionEventReducer.data.streamUrl);
-      // setCurrentRound(competitionEventReducer.round);
+      setCurrentRound(competitionEventReducer.round);
+      setIsPreRollPlaying(true);
     }
     if (competitionEventReducer.action === COMPETITION_AD_STARTING) {
       setIsPreRollPlaying(true);
@@ -227,7 +273,6 @@ const StreamTo = ({route, theme}) => {
       // setStreamUrl(competitionEventReducer.data.streamUrl);
     }
     if (competitionEventReducer.action === COMPETITION_PREROLL_STARTED) {
-      setCurrentPreRoll(competitionEventReducer.preRoll);
       setPreRollUrl(competitionEventReducer.preRoll?.preRollEffectURL);
       setIsPreRollPlaying(true);
       // setStreamUrl(competitionEventReducer.data.streamUrl);
@@ -237,12 +282,12 @@ const StreamTo = ({route, theme}) => {
       setIsPreRollPlaying(true);
     }
     if (competitionEventReducer.action === COMPETITION_ROUND_STARTED) {
-      setPreRollUrl('tmp/f4187e46-0607-4bc4-8ab6-d0dcafa7b2ae.mp4');
+      //setPreRollUrl('pre_roll/2a4c93de-a31a-43d3-a896-8373d692719d.mp4');
       setIsPreRollPlaying(true);
       // setStreamUrl(competitionEventReducer.data.streamUrl);
     }
     if (competitionEventReducer.action === COMPETITION_YOURTURN_STARTED) {
-      //PlaySound(currentRound?.beat?.beatUrl);
+      PlaySound(currentRound?.beat?.beatUrl);
       setIsPreRollPlaying(false);
       // setStreamUrl(competitionEventReducer.data.streamUrl);
     }
@@ -250,13 +295,17 @@ const StreamTo = ({route, theme}) => {
       setPoints(competitionEventReducer.points);
       // setStreamUrl(competitionEventReducer.data.streamUrl);
     }
-    if (competitionEventReducer.action === COMPETITION_CONTESTANT_INFO_STARTING) {
+    if (
+      competitionEventReducer.action === COMPETITION_CONTESTANT_INFO_STARTING
+    ) {
       // startCountDown();
       console.log('Is Starting');
       //setIsPreRollPlaying(true);
     }
-    if (competitionEventReducer.action === COMPETITION_CONTESTANT_INFO_STARTED) {
-      setCurrentPreRoll(competitionEventReducer.preRoll);
+    if (
+      competitionEventReducer.action === COMPETITION_CONTESTANT_INFO_STARTED
+    ) {
+      // setCurrentPreRoll(competitionEventReducer.preRoll);
       setPreRollUrl(competitionEventReducer.preRoll?.preRollEffectURL);
       setIsPreRollPlaying(true);
       console.log('Is Started', preRollUrl);
@@ -281,10 +330,6 @@ const StreamTo = ({route, theme}) => {
   ]);
   const PlaySound = beatUrl => {
     Sound.setCategory('Playback');
-    console.log(
-      'CH-sound',
-      `${ApiConstants.API_MEDIA}${encodeURIComponent(beatUrl)}`,
-    );
     // Load the sound file 'whoosh.mp3' from the app bundle
     // See notes below about preloading sounds within initialization code below.
     whoosh = new Sound(
@@ -303,159 +348,306 @@ const StreamTo = ({route, theme}) => {
             whoosh.getNumberOfChannels(),
         );
 
-      // Play the sound with an onEnd callback
-      whoosh.play((success) => {
-        if (success) {
-          console.log("Sound done");
-        } else {
-          console.log("Sound not done");
-        }
-      });
-      whoosh.setNumberOfLoops(-1);
-    });
+        // Play the sound with an onEnd callback
+        whoosh.play(success => {
+          if (success) {
+            console.log('Sound done');
+          } else {
+            console.log('Sound not done');
+          }
+        });
+        whoosh.setNumberOfLoops(-1);
+      },
+    );
   };
 
   return (
     <View style={style.maincontainer1}>
       {isPreRollPlaying === true ? (
-          <View style={style.splitCont }>
-            {preRollUrl ?
+        <View style={style.splitCont}>
+          {preRollUrl ? (
             <Video
               source={{
                 //uri: `http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4`,
-                uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(preRollUrl)}`,
+                uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(
+                  preRollUrl,
+                )}`,
               }}
-              style={{height: '100%', width: '100%'}}
+              style={{
+                alignItems: 'stretch',
+                bottom: 0,
+                height: '100%',
+                left: 0,
+                position: 'absolute',
+                right: 0,
+                top: 0,
+              }}
               resizeMode={'stretch'}
+              // controls={false}
+              useNativeControls={true}
               shouldPlay
-              controls={false}
               paused={false}
               repeat={true}
               autoplay={true}
             />
-              : <View style={{ height: "100%", width: "100%" }}>
-                <Image source={{
-                  uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(participants[0]?.profilepic)}`,
-                }} style={{height:'100%',width:'100%'}}/>
-              </View>
-            }
-            {competitionEventReducer.action === COMPETITION_CONTESTANT_INFO_STARTED && (
-              <Text style={style.nextRoundTxt}>
-                {competitionEventReducer.preRoll?.name}
-              </Text>
-            )}
-            {competitionEventReducer.action === COMPETITION_ROUND_STARTED && (
-              <View>
-                <Text style={style.nextRoundTxt}>
-                  NEXT ROUND BEGINS
-                  {/*{competitionEventReducer?.round?.round}*/}
-                </Text>
-                <Text style={style.nextRoundTxt}>
-                  1:00
-                </Text>
-              </View>
-            )}
-          </View>
-        )
-        : (
-          <>
-            <View style={style.topHeader}>
-              <View style={style.insideHeader}>
-                <Image source={eye} color={"white"} />
-                <Text style={style.titleText1}>722K</Text>
-              </View>
-              <View>
-                <ProgressBar
-                  progress={60}
-                  // duration={progress}
-                  color="#00FF99"
-                  unfilledColor="#E6E6E6"
-                  borderColor="rgba(255,255,255,0.1)"
-                  width={200}
-                  height={5}
-                />
-              </View>
-              <View style={style.logoView}>
-                <Image source={SmallLogo} tintColor={"white"} />
-                <Image source={close} tintColor={"white"} style={{ marginLeft: 10 }} />
-              </View>
-            </View>
-            <View style={style.splitView}>
-              <NodeCameraView
-                style={[style.camera]}
-                ref={vb}
-                outputUrl={"rtmp://streaming.mcmasterofceremony.com/liveone/" + currentUser?.streamurl}
-                camera={{ cameraId: 1, cameraFrontMirror: true }}
-                audio={{ bitrate: 32000, profile: 1, samplerate: 44100 }}
-                video={{ preset: 12, bitrate: 400000, profile: 1, fps: 15, videoFrontMirror: false }}
-                autopreview={true}
-                onStatus={(a, b) => {
-                  //alert(JSON.stringify(b))
+          ) : (
+            <View style={{height: '100%', width: '100%'}}>
+              <Image
+                source={{
+                  uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(
+                    currentUser?.profilepic,
+                  )}`,
                 }}
-
+                style={{height: '100%', width: '100%'}}
+              />
+            </View>
+          )}
+          {competitionEventReducer.action ===
+            COMPETITION_CONTESTANT_INFO_STARTED && (
+            <View style={{flex: 1}}>
+              {participants[0].id === myuserId ? (
+                <Text style={style.nextRoundTxt}>{currentUser?.username}</Text>
+              ) : (
+                <Text style={style.nextRoundTxt}>{otherUser?.username}</Text>
+              )}
+            </View>
+          )}
+          {competitionEventReducer.action === COMPETITION_ROUND_STARTED && (
+            <Text style={style.nextRoundTxt}>
+              {/*NEXT ROUND BEGINS*/}
+              Round {competitionEventReducer?.round?.round}
+            </Text>
+          )}
+        </View>
+      ) : (
+        <>
+          <View style={style.topHeader}>
+            <View style={style.insideHeader}>
+              <Image source={eye} color={'white'} />
+              <Text style={style.titleText1}>722K</Text>
+            </View>
+            <View>
+              <StreamProgress
+                //progress={loaderProgress?.progress ? loaderProgress?.progress : 60}
+                progressCount={loaderProgress}
+              />
+            </View>
+            <View style={style.logoView}>
+              <Image source={SmallLogo} tintColor={'white'} />
+              <Image
+                source={close}
+                tintColor={'white'}
+                style={{marginLeft: 10}}
+              />
+            </View>
+          </View>
+          {/*<View style={style.splitView}>*/}
+          {type === 'aud' ? (
+            <View style={style.splitView}>
+              <NodePlayerView
+                style={[style.camera]}
+                ref={vb1}
+                inputUrl={
+                  'rtmp://streaming.mcmasterofceremony.com/liveone/' +
+                  competitionEventReducer.participants[0]?.streamurl
+                }
+                scaleMode={'ScaleToFill'}
+                audioEnable={false}
+                bufferTime={300}
+                maxBufferTime={1000}
+                autoplay={true}
               />
               <NodePlayerView
                 style={[style.camera]}
                 ref={vb1}
-                inputUrl={"rtmp://streaming.mcmasterofceremony.com/liveone/" + otherUser?.streamurl}
-                scaleMode={"ScaleToFill"}
+                inputUrl={
+                  'rtmp://streaming.mcmasterofceremony.com/liveone/' +
+                  competitionEventReducer.participants[1]?.streamurl
+                }
+                scaleMode={'ScaleToFill'}
                 audioEnable={false}
                 bufferTime={300}
                 maxBufferTime={1000}
                 autoplay={true}
               />
             </View>
-            <View style={style.userCont}>
-              <TouchableOpacity style={currentParticipant.id === participants[0] ? style.userContImg : style.userContImg1}>
-                <Image source={{
-                  uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(participants[0]?.profilepic)}`,
-                  //uri: `https://picsum.photos/seed/picsum/200/300`,
-                }} style={style.userContImg1} />
-              </TouchableOpacity>
-              <View style={style.pearCont}>
-                <Image source={pears} style={style.pearImg } />
-                <Text style={style.pearTxt}>2500</Text>
-              </View>
-              <TouchableOpacity style={currentParticipant.id === participants[1] ? style.userContImg : style.userContImg1}>
-                <Image source={{
-                  uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(participants[1]?.profilepic)}`,
-                }} />
-              </TouchableOpacity>
+          ) : (
+            <View style={style.splitView}>
+              <NodeCameraView
+                style={[style.camera]}
+                ref={vb}
+                outputUrl={
+                  'rtmp://streaming.mcmasterofceremony.com/liveone/' +
+                  currentUser?.streamurl
+                }
+                camera={{cameraId: 1, cameraFrontMirror: true}}
+                audio={{bitrate: 32000, profile: 1, samplerate: 44100}}
+                video={{
+                  preset: 12,
+                  bitrate: 400000,
+                  profile: 1,
+                  fps: 15,
+                  videoFrontMirror: false,
+                }}
+                autopreview={true}
+                onStatus={(a, b) => {
+                  //alert(JSON.stringify(b))
+                }}
+              />
+              <NodePlayerView
+                style={[style.camera]}
+                ref={vb1}
+                inputUrl={
+                  'rtmp://streaming.mcmasterofceremony.com/liveone/' +
+                  otherUser?.streamurl
+                }
+                scaleMode={'ScaleToFill'}
+                audioEnable={false}
+                bufferTime={300}
+                maxBufferTime={1000}
+                autoplay={true}
+              />
             </View>
-            <Image source={signal} style={style.signalImg} />
-            <Comment  data={competitionEventReducer?.comment}/>
-            <View style={style.comtCont}>
-              <View style={style.comtContLeft}>
+          )}
+
+          <View style={style.userCont}>
+            <TouchableOpacity
+              style={
+                currentParticipant.id === participants[0]?.id
+                  ? style.userContImg
+                  : style.userContImg1
+              }
+              onPress={() => {
+                RateRef.current.snapTo(0);
+              }}>
+              <Image
+                source={{
+                  uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(
+                    participants[0]?.profilepic,
+                  )}`,
+                }}
+                style={style.userContImg1}
+              />
+            </TouchableOpacity>
+            <View style={style.pearCont}>
+              <Image source={pears} style={style.pearImg} />
+              <Text style={style.pearTxt}>2500</Text>
+            </View>
+            <TouchableOpacity
+              style={
+                currentParticipant.id === participants[1]?.id
+                  ? style.userContImg
+                  : style.userContImg1
+              }
+              onPress={() => {
+                RateRef.current.snapTo(0);
+              }}>
+              <Image
+                source={{
+                  uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(
+                    participants[1]?.profilepic,
+                  )}`,
+                }}
+                style={style.userContImg1}
+              />
+            </TouchableOpacity>
+          </View>
+          <Image source={signal} style={style.signalImg} />
+          <Comment data={competitionEventReducer?.comment} />
+          <View style={style.comtCont}>
+            <View style={style.comtContLeft}>
+              <Pressable
+                onPress={() => {
+                  hintRef.current.snapTo(0);
+                }}>
                 <Image source={hint} style={style.hintImg} />
-                <Text style={style.comtTxtLeft}>Tap a Contestant to vote.</Text>
-              </View>
-              <View style={style.comtContRight}>
-                {/*<TextInput style={style.comtText}>Tap a Contestant to vote.</TextInput>*/}
-                <TextInput
-                  style={style.comtTxtRight}
-                  placeholder={"Leave a comment..."} placeholderTextColor={"#D5D5D5"}
-                  value={commentPost}
-                  onChangeText={(text) => {
-                    setCommentPost(text);
-                  }}
-                  onSubmitEditing={() => {
-                    if (room && commentPost)
-                      room.send("comment", commentPost);
-                    Keyboard.dismiss();
-                    setCommentPost("");
-                  }}
-                />
-                <TouchableOpacity onPress={() => {
-                  if (room && commentPost)
-                    room.send("comment", commentPost);
-                  setCommentPost("");
+              </Pressable>
+              <Text style={style.comtTxtLeft}>Tap a Contestant to vote.</Text>
+            </View>
+            <View style={style.comtContRight}>
+              {/*<TextInput style={style.comtText}>Tap a Contestant to vote.</TextInput>*/}
+              <TextInput
+                style={style.comtTxtRight}
+                placeholder={'Leave a comment...'}
+                placeholderTextColor={'#D5D5D5'}
+                value={commentPost}
+                onChangeText={text => {
+                  setCommentPost(text);
+                }}
+                onSubmitEditing={() => {
+                  if (room && commentPost) {
+                    room.send('comment', commentPost);
+                  }
+                  Keyboard.dismiss();
+                  setCommentPost('');
+                }}
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  if (room && commentPost) {
+                    room.send('comment', commentPost);
+                  }
+                  setCommentPost('');
                   Keyboard.dismiss();
                 }}>
-                  <Image source={cmmt} style={style.commtImg} /></TouchableOpacity>
-              </View>
+                <Image source={cmmt} style={style.commtImg} />
+              </TouchableOpacity>
             </View>
-          </>
-        )}
+          </View>
+        </>
+      )}
+      <BottomSheet
+        ref={hintRef}
+        snapPoints={['25%', 0]}
+        initialSnap={1}
+        // renderHeader={() => {
+        //   return renderHeaderView();
+        // }}
+        renderContent={() => {
+          return <HintSheet />;
+        }}
+      />
+      <BottomSheet
+        ref={RateRef}
+        snapPoints={['35%', 0]}
+        initialSnap={1}
+        // renderHeader={() => {
+        //   return renderHeaderView();
+        // }}
+        renderContent={() => {
+          if (currentParticipant.id === participants[0]?.id) {
+            return (
+              <RateSheet
+                competitionDetailId={competitionDetail?.id}
+                userId={myuserId}
+                round={competitionEventReducer?.round?.round}
+                participants={ participants[0]?.id}
+                uri={{
+                  uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(
+                    participants[0]?.profilepic,
+                  )}`,
+                }}
+                username={participants[0]?.username}
+              />
+            );
+          } else {
+            return (
+              <RateSheet
+                competitionDetailId={competitionDetail?.id}
+                userId={myuserId}
+                round={competitionEventReducer?.round?.round}
+                participants={ participants[1]?.id}
+                uri={{
+                  uri: `${ApiConstants.API_MEDIA}${encodeURIComponent(
+                    participants[1]?.profilepic,
+                  )}`,
+                }}
+                username={participants[1]?.username}
+              />
+            );
+          }
+        }}
+      />
     </View>
   );
 };

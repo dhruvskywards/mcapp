@@ -131,12 +131,14 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.mcmasterofceremony"
+        applicationId "com.masterofceremonymc"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
-        vectorDrawables.useSupportLibrary = true        
+        versionCode 6
+        versionName "1.6"
+        vectorDrawables.useSupportLibrary = true     
+        missingDimensionStrategy 'react-native-camera', 'general'
+        multiDexEnabled=true
     }
     splits {
         abi {
@@ -166,7 +168,14 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
-
+    packagingOptions {
+        pickFirst 'lib/x86/libc++_shared.so'
+        pickFirst 'lib/x86_64/libjsc.so'
+        pickFirst 'lib/arm64-v8a/libjsc.so'
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+    }
 
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
@@ -183,15 +192,21 @@ android {
 
         }
     }
+
 }
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
+    implementation platform('com.google.firebase:firebase-bom:28.4.2') // new app
+    implementation 'com.google.firebase:firebase-analytics' //new app
+    implementation 'com.android.support:multidex:2.0.1'
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     implementation platform('com.google.firebase:firebase-bom:28.4.0')
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.android.gms:play-services-base:6.5.87'
+    //implementation 'com.google.android.gms:play-services-safetynet:17.0.1'
  compile project(':react-native-splash-screen')
  compile project(':react-native-vector-icons')
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {

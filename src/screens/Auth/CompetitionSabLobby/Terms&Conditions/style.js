@@ -3,6 +3,7 @@ import fonts from 'src/utils/fonts';
 import theme from 'src/utils/theme';
 import Colors from "../../../../utils/theme";
 import Fonts from "../../../../utils/fonts";
+import * as Dimensions from "react-native";
 
 export default ScaledSheet.create({
   maincontainer: {
@@ -41,6 +42,12 @@ export default ScaledSheet.create({
     color: theme.BACKGROUND_SECONDARY_DARK,
     fontFamily: fonts.Proxima_Nova_Regular,
   },
+  pdf: {
+    // flex: 1,
+
+     height:  4000,
+    width: '100%',
+  },
   FooterButton: {
     position: 'absolute',
     width: '100%',
@@ -57,10 +64,28 @@ export default ScaledSheet.create({
     backgroundColor: Colors.BLACK,
     height:70
   },
+  FooterButton2: {
+    bottom: 0,
+    position: 'absolute',
+    width: '100%',
+    alignItems: 'center',
+    borderTopLeftRadius: scale(20),
+    borderTopRightRadius: scale(20),
+    paddingVertical: verticalScale(16),
+    // backgroundColor: '#707070',
+    backgroundColor: Colors.TRANSPARENT,
+    height:70
+  },
   buttonTitle: {
     fontFamily: Fonts.Proxima_Nova_Sbold,
     fontSize: scale(15),
     textAlign: 'center',
     color: Colors.WHITE,
+  },
+  buttonTitle1: {
+    fontFamily: Fonts.Proxima_Nova_Sbold,
+    fontSize: scale(15),
+    textAlign: 'center',
+    color: Colors.TRANSPARENT,
   },
 });

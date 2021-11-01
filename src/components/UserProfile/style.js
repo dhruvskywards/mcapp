@@ -26,4 +26,18 @@ export default ScaledSheet.create({
     fontSize: scale(10),
     color: Colors.TEXT_VARIANT_2_BlK,
   },
+  micImgCont:{
+    height: scale(21),
+    width: scale(21),
+    borderRadius:scale(11),
+    backgroundColor: Colors.WHITE,
+    position:"absolute",
+    top:20,
+    right:15,
+    justifyContent:'center',alignItems:'center'
+  },
+  micImg:{
+    height: scale(14),
+    width: scale(9),
+  }
 });

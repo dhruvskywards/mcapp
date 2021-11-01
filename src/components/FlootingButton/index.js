@@ -4,11 +4,18 @@ import styles from './style';
 import CountDown from 'react-native-countdown-component';
 import {scale} from 'react-native-size-matters';
 import {useTheme} from '@react-navigation/native';
-
-const FlootingButton = ({CompetitionStarted = false, isfinished, onPress}) => {
+import moment from 'moment';
+import {formatTime} from "redux-logger/src/helpers";
+const FlootingButton = ({CompetitionStarted = false, isfinished, onPress,test}) => {
   const CustomTheme = useTheme();
   const [isFinished, setFinished] = useState(isfinished);
-  const second = 50;
+  const second = 40;
+
+    var startDate = moment(new Date(), "DD.MM.YYYY hh.mm");
+    var endDate = moment('2021-10-08T18:04:00.000Z', "YYYY-MM-DD hh.mm");
+
+    var result = endDate.diff(startDate, 'seconds');
+
   const CompetitonInfo = value => {
     setFinished(value);
     CompetitionStarted(value);
@@ -38,7 +45,7 @@ const FlootingButton = ({CompetitionStarted = false, isfinished, onPress}) => {
           <Text style={styles.TitleText}>STARTS IN </Text>
           <CountDown
             size={scale(14)}
-            until={second}
+            until={result}
             onFinish={() => CompetitonInfo(true)}
             style={styles.countdownItem}
             digitStyle={styles.digitalstyle}

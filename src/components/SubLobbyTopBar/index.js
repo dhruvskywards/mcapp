@@ -7,7 +7,7 @@ import TermsAndConditions from '../../screens/Auth/CompetitionSabLobby/Terms&Con
 import style from './style';
 import {useTheme} from '@react-navigation/native';
 
-const SubLobbyTopBar = ({initialTab = 0, route,room,type,item,competitionDetail}) => {
+const SubLobbyTopBar = ({initialTab = 0, route,room,type,item,competitionDetail,tnc,fun}) => {
   const CustomTheme = useTheme();
   const [footer] = useState([
     {name: 'Details'},
@@ -18,6 +18,7 @@ const SubLobbyTopBar = ({initialTab = 0, route,room,type,item,competitionDetail}
   const [tab, setTab] = useState(0);
   const selectTab = value => {
     setTab(value);
+    fun&&fun(value)
   };
   const showPage = () => {
     switch (tab) {
@@ -29,11 +30,11 @@ const SubLobbyTopBar = ({initialTab = 0, route,room,type,item,competitionDetail}
           competitionDetail={item}
         />;
       case 1:
-        return <TermsAndConditions type={type} item={item} />;
+        return <TermsAndConditions type={type} item={item} tnc={tnc}  />;
       case 2:
         return <Prize />;
       case 3:
-        return <Chat />;
+        return <Chat type={type} item={item} room={room} competitionDetail={item}/>;
       default:
         break;
     }

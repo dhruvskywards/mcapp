@@ -21,6 +21,7 @@ const LivestreamCard = ({competitionData}) => {
     setModelVisisble(false);
     navigation.navigate('JoinCompetition', { type: typevar, item: competitionData });
   };
+
   return (
     <View
       style={[
@@ -157,7 +158,7 @@ const LivestreamCard = ({competitionData}) => {
             />
             <Button
               customStyle={style.padding}
-              title={'Join as Contestant 0 / 2'}
+              title={'Join as Contestant' + ' '+ competitionData?.participantCount + '/' +  competitionData?.competitionOption?.maxParticipants}
               // onPress={() => navigation.navigate('CompetitionSubLobby')}
               onPress={() => JoinCompetition('comp')}
             />
